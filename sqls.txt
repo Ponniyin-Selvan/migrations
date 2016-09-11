@@ -1,0 +1,29 @@
+select distinct b.member, a.poster_id from phpbb_posts a, ps_posts b where a.post_approved = 0 and b.phpbb_post_id = a.post_id
+
+select distinct b.member
+from phpbb_posts a, ps_posts b left join phpbb_users c on c.username = b.member
+where a.post_approved = 0 
+and b.phpbb_post_id = a.post_id 
+and c.username is null
+
+update ps_posts set member = "subramaniam.sankaran" where member = "<subramaniam.sankaran@...>"
+update ps_posts set member = "ramachandran.mahadevan" where member = "Mahadevan, Ramachandran \\(GE, Research\\)"
+update ps_posts set member = "ramachandran.mahadevan" where member = "Mahadevan, Ramachandran \(Research\)"
+update ps_posts set member = "ramachandran.mahadevan" where member = "ramachandran mahadevan"
+update ps_posts set member = "ps-poll" where member like "ponniyinselvan@yahoogroups.com%"
+
+update phpbb_posts a, ps_posts b, phpbb_users c set poster_id = c.user_id, post_approved = 1
+where a.post_approved = 0 and b.phpbb_post_id = a.post_id
+and c.username = b.member
+
+select a.post_id, b.id, b.thread_topic, b.member, c.username 
+from phpbb_posts a, ps_posts b, phpbb_users c 
+where a.post_approved = 0 
+and a.poster_id = 1 
+and b.phpbb_post_id = a.post_id
+and c.username = b.member
+
+delete from phpbb_topics where topic_approved = 0
+select * from phpbb_topics a where exists (select 'x' from phpbb_posts b where b.post_approved = 0 and a.topic_id = b.topic_id)  and a.topic_approved = 0
+update ps_posts a, phpbb_posts b set phpbb_post_id = null where b.post_approved = 0 and a.phpbb_post_id = b.post_id
+delete from phpbb_posts where post_approved = 0

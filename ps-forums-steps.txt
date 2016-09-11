@@ -1,0 +1,36 @@
+Install
+Backup database
+Sort by joined on asc
+Remove duplicate users from the text file (vksankaran, hamid)
+add ps-poll user
+Run Import Users
+select user_id, username, user_timezone, user_post_sortby_dir from phpbb_users where user_type = 0 and user_timezone = 0
+update phpbb_users set user_timezone = 5.5, user_post_sortby_dir = 'd' where user_type = 0 and user_timezone = 0
+Save the output for password
+backup database
+Import ps_posts data to the database
+update ps_posts set phpbb_post_id = null where phpbb_post_id is not null
+
+update ps_posts set member = "subramaniam.sankaran" where member = "<subramaniam.sankaran@...>"
+update ps_posts set member = "ramachandran.mahadevan" where member = "Mahadevan, Ramachandran \\(GE, Research\\)"
+update ps_posts set member = "ramachandran.mahadevan" where member = "Mahadevan, Ramachandran \(Research\)"
+update ps_posts set member = "ramachandran.mahadevan" where member = "ramachandran mahadevan"
+update ps_posts set member = "ps-poll" where member like "ponniyinselvan@yahoogroups.com%"
+
+backup database
+Ensure that the forum id is correct in import_posts.php
+Give access "Standard Posts" + Poll for Guests
+Ensure that the title with has been expanded to 120
+ALTER TABLE phpbb_posts CHANGE post_subject post_subject varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE phpbb_topics CHANGE topic_title topic_title varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE phpbb_drafts CHANGE draft_subject draft_subject varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE phpbb_forums CHANGE forum_last_post_subject forum_last_post_subject varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE phpbb_privmsgs CHANGE message_subject message_subject varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE phpbb_topics CHANGE topic_last_post_subject topic_last_post_subject varchar(120) DEFAULT '' NOT NULL;
+
+Import Posts
+Give access "Read Only" for Guests
+Re-create posts
+Call archive_posts in the cron script
+Set default timezone as India for users
+Send Mass email with their passwords
