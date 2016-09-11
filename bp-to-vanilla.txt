@@ -1,0 +1,223 @@
+1. Import Users to User table
+2. Create Activity for Joining
+3. Import Topics
+4. Create Activity for Discussion
+5. Create User Discussion relation 
+6. 
+
+TRUNCATE TABLE GDN_User;
+INSERT
+  INTO GDN_User(
+        UserID,
+		Name,
+		Password,
+		HashMethod,
+		Email,
+		ShowEmail,
+		DateFirstVisit,
+		DateLastActive,
+		DateInserted,
+		DateUpdated,
+		HourOffset,
+		CountDiscussions,
+		CountComments) 
+ SELECT ID,
+        user_login,
+        user_pass,
+        'Vanilla',
+        user_email,
+        0,
+        user_registered,
+        IF(last_post_date > last_topic_date, last_post_date, last_topic_date),
+        user_registered,
+        user_registered,
+        6,
+		IFNULL(topic_count, 0),
+		IFNULL(comment_count, 0)
+   FROM psvp.psvp_users users
+  LEFT OUTER JOIN
+        (SELECT topic_poster, 
+               COUNT(topic_id) topic_count
+         FROM psvp.psvp_bb_topics
+        GROUP BY topic_poster) user_topics
+	 ON users.ID = user_topics.topic_poster
+  LEFT OUTER JOIN
+		(SELECT poster_id, 
+               COUNT(post_id) comment_count
+         FROM psvp.psvp_bb_posts
+        GROUP BY poster_id) user_comments
+     ON users.id = user_comments.poster_id
+  LEFT OUTER JOIN
+		(SELECT poster_id, 
+               MAX(post_time) last_post_date
+         FROM psvp.psvp_bb_posts
+        GROUP BY poster_id) user_last_post
+     ON users.id = user_last_post.poster_id
+  LEFT OUTER JOIN
+        (SELECT topic_poster, 
+               MAX(topic_start_time) last_topic_date
+         FROM psvp.psvp_bb_topics
+        GROUP BY topic_poster) user_last_topic
+	 ON users.ID = user_last_topic.topic_poster;
+	
+TRUNCATE TABLE GDN_Activity;
+INSERT
+  INTO GDN_Activity(
+       ActivityTypeID,
+       ActivityUserID,
+	   Story,
+	   DateInserted)
+SELECT 2,
+	   ID,
+	   'Welcome Aboard',
+	   user_registered
+  FROM psvp.psvp_users users;
+
+
+TRUNCATE TABLE GDN_Discussion;
+INSERT
+  INTO GDN_Discussion(
+		DiscussionID,
+		Type,
+		CategoryID,
+		InsertUserID,
+		UpdateUserID,
+		LastCommentID,
+		Name,
+		Body,
+		Format,
+		CountComments,
+		DateInserted,
+		DateUpdated,
+		DateLastComment,
+		LastCommentUserID)
+SELECT  CAST(topic_meta.meta_value AS UNSIGNED),
+        'Discussion',
+        2,
+		topic.topic_poster,
+		topic.topic_poster,
+		CAST(post_meta.meta_value AS UNSIGNED),
+		topic.topic_title,
+        post.post_text,
+        'Html',
+        topic.topic_posts,
+        topic.topic_start_time,
+        topic.topic_start_time,
+        topic.topic_time,
+        topic.topic_last_poster
+  FROM  psvp.psvp_bb_topics topic
+ INNER  JOIN psvp.psvp_bb_posts post
+    ON  topic.topic_id = post.topic_id
+   AND  post.post_position = 1
+ INNER  JOIN psvp.psvp_bb_meta topic_meta
+    ON  topic_meta.object_type = 'bb_topic'
+   AND  topic_meta.meta_key = 'message_id'
+   AND  topic_meta.object_id = topic.topic_id
+ LEFT OUTER JOIN psvp.psvp_bb_meta post_meta
+    ON  post_meta.object_type = 'bb_post'
+   AND  post_meta.meta_key = 'message_id'
+   AND  post_meta.object_id = topic.topic_last_post_id;
+   
+INSERT
+  INTO GDN_Activity(
+	ActivityTypeID,
+	ActivityUserID,
+	Story,
+	InsertUserID,
+	DateInserted)
+SELECT 17,
+	   topic.topic_poster,
+       REPLACE(REPLACE(REPLACE('<a href="/forum/discussion/%id%/%slug%">%title%</a>' , '%id%', topic_meta.meta_value), '%slug%', SUBSTR(topic.topic_slug, LOCATE('-', topic.topic_slug) + 1)), '%title%', topic.topic_title),
+		topic.topic_poster,
+        topic.topic_start_time
+  FROM  psvp.psvp_bb_topics topic
+ INNER  JOIN psvp.psvp_bb_meta topic_meta
+    ON  topic_meta.object_type = 'bb_topic'
+   AND  topic_meta.meta_key = 'message_id'
+   AND  topic_meta.object_id = topic.topic_id;
+	   
+TRUNCATE TABLE GDN_UserDiscussion;
+INSERT
+  INTO GDN_UserDiscussion(
+	UserID,
+	DiscussionID,
+	CountComments,
+	DateLastViewed)
+SELECT  topic.topic_poster,
+        CAST(topic_meta.meta_value AS UNSIGNED),
+		COUNT(post.post_id),
+		MAX(post_time)
+  FROM  psvp.psvp_bb_topics topic
+ INNER  JOIN psvp.psvp_bb_posts post
+    ON  topic.topic_id = post.topic_id
+ INNER  JOIN psvp.psvp_bb_meta topic_meta
+    ON  topic_meta.object_type = 'bb_topic'
+   AND  topic_meta.meta_key = 'message_id'
+   AND  topic_meta.object_id = topic.topic_id
+ GROUP  BY topic.topic_poster,
+        topic_meta.meta_value;
+
+TRUNCATE TABLE GDN_Comment;		
+INSERT
+  INTO GDN_Comment(
+	CommentID,
+	DiscussionID,
+	InsertUserID,
+	Body,
+	Format,
+	DateInserted,
+	Flag)
+SELECT CAST(IFNULL(post_meta.meta_value, topic_meta.meta_value) AS UNSIGNED),
+       CAST(topic_meta.meta_value AS UNSIGNED),
+	   post.poster_id,
+	   post.post_text,
+	   'Html',
+	   post_time,
+	   0
+  FROM psvp.psvp_bb_posts post
+  INNER JOIN psvp.psvp_bb_meta post_meta
+    ON  post_meta.object_type = 'bb_post'
+   AND  post_meta.meta_key = 'message_id'
+   AND  post_meta.object_id = post.post_id      
+ INNER  JOIN psvp.psvp_bb_meta topic_meta
+    ON  topic_meta.object_type = 'bb_topic'
+   AND  topic_meta.meta_key = 'message_id'
+   AND  topic_meta.object_id = post.topic_id
+ WHERE  post.post_position > 1;
+ 
+UPDATE GDN_Category
+   SET CountDiscussions = (SELECT COUNT(*) FROM GDN_Discussion  WHERE CategoryId = 2),
+       CountComments = (SELECT COUNT(*) 
+	                      FROM GDN_Comment comment 
+						 INNER JOIN GDN_Discussion topic 
+						    ON topic.DiscussionId = comment.DiscussionId
+						   AND topic.CategoryId = 2),
+	   LastCommentID = (SELECT MAX(CommentID) 
+	                      FROM GDN_Comment comment 
+						 INNER JOIN GDN_Discussion topic 
+						    ON topic.DiscussionId = comment.DiscussionId
+						   AND topic.CategoryId = 2),
+	   LastDiscussionID = (SELECT MAX(DiscussionID) FROM GDN_Discussion  WHERE CategoryId = 2)
+  WHERE CategoryID = 2;
+  
+UPDATE GDN_Discussion
+   SET CategoryId = 3
+  WHERE Name LIKE '%[off-topic]%' 
+     OR Name LIKE '%invite%'
+     OR Name LIKE '%invitation%';
+  
+UPDATE GDN_Category
+   SET CountDiscussions = (SELECT COUNT(*) FROM GDN_Discussion  WHERE CategoryId = 3),
+       CountComments = (SELECT COUNT(*) 
+	                      FROM GDN_Comment comment 
+						 INNER JOIN GDN_Discussion topic 
+						    ON topic.DiscussionId = comment.DiscussionId
+						   AND topic.CategoryId = 3),
+	   LastCommentID = (SELECT MAX(CommentID) 
+	                      FROM GDN_Comment comment 
+						 INNER JOIN GDN_Discussion topic 
+						    ON topic.DiscussionId = comment.DiscussionId
+						   AND topic.CategoryId = 3),
+	   LastDiscussionID = (SELECT MAX(DiscussionID) FROM GDN_Discussion  WHERE CategoryId = 3)
+  WHERE CategoryID = 3;
+  

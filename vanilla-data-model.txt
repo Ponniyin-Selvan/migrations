@@ -1,0 +1,247 @@
+(root@localhost) [vanilla]> desc GDN_User;
++--------------------------+----------------+------+-----+---------+----------------+
+| Field                    | Type           | Null | Key | Default | Extra          |
++--------------------------+----------------+------+-----+---------+----------------+
+| UserID                   | int(11)        | NO   | PRI | NULL    | auto_increment |
+| Name                     | varchar(50)    | NO   | MUL | NULL    |                |
+| Password                 | varbinary(100) | NO   |     | NULL    |                |
+| HashMethod               | varchar(10)    | YES  |     | NULL    |                |
+| Photo                    | varchar(255)   | YES  |     | NULL    |                |
+| About                    | text           | YES  |     | NULL    |                |
+| Email                    | varchar(200)   | NO   | MUL | NULL    |                |
+| ShowEmail                | tinyint(4)     | NO   |     | 0       |                |
+| Gender                   | enum('m','f')  | NO   |     | m       |                |
+| CountVisits              | int(11)        | NO   |     | 0       |                |
+| CountInvitations         | int(11)        | NO   |     | 0       |                |
+| CountNotifications       | int(11)        | YES  |     | NULL    |                |
+| InviteUserID             | int(11)        | YES  |     | NULL    |                |
+| DiscoveryText            | text           | YES  |     | NULL    |                |
+| Preferences              | text           | YES  |     | NULL    |                |
+| Permissions              | text           | YES  |     | NULL    |                |
+| Attributes               | text           | YES  |     | NULL    |                |
+| DateSetInvitations       | datetime       | YES  |     | NULL    |                |
+| DateOfBirth              | datetime       | YES  |     | NULL    |                |
+| DateFirstVisit           | datetime       | YES  |     | NULL    |                |
+| DateLastActive           | datetime       | YES  |     | NULL    |                |
+| LastIPAddress            | varchar(15)    | YES  |     | NULL    |                |
+| DateInserted             | datetime       | NO   |     | NULL    |                |
+| InsertIPAddress          | varchar(15)    | YES  |     | NULL    |                |
+| DateUpdated              | datetime       | YES  |     | NULL    |                |
+| UpdateIPAddress          | varchar(15)    | YES  |     | NULL    |                |
+| HourOffset               | int(11)        | NO   |     | 0       |                |
+| Score                    | float          | YES  |     | NULL    |                |
+| Admin                    | tinyint(4)     | NO   |     | 0       |                |
+| Banned                   | tinyint(4)     | NO   |     | 0       |                |
+| Deleted                  | tinyint(4)     | NO   |     | 0       |                |
+| CountUnreadConversations | int(11)        | YES  |     | NULL    |                |
+| CountDiscussions         | int(11)        | YES  |     | NULL    |                |
+| CountUnreadDiscussions   | int(11)        | YES  |     | NULL    |                |
+| CountComments            | int(11)        | YES  |     | NULL    |                |
+| CountDrafts              | int(11)        | YES  |     | NULL    |                |
+| CountBookmarks           | int(11)        | YES  |     | NULL    |                |
+| DateAllViewed            | datetime       | YES  |     | NULL    |                |
+| LastIP                   | varchar(14)    | YES  |     | NULL    |                |
++--------------------------+----------------+------+-----+---------+----------------+
+
+(root@localhost) [vanilla]> desc GDN_Discussion;
++-------------------+-----------------------------------------------------+------+-----+---------+----------------+
+| Field             | Type                                                | Null | Key | Default | Extra          |
++-------------------+-----------------------------------------------------+------+-----+---------+----------------+
+| DiscussionID      | int(11)                                             | NO   | PRI | NULL    | auto_increment |
+| Type              | varchar(10)                                         | YES  | MUL | NULL    |                |
+| ForeignID         | varchar(30)                                         | YES  | MUL | NULL    |                |
+| CategoryID        | int(11)                                             | NO   | MUL | NULL    |                |
+| InsertUserID      | int(11)                                             | NO   | MUL | NULL    |                |
+| UpdateUserID      | int(11)                                             | NO   |     | NULL    |                |
+| LastCommentID     | int(11)                                             | YES  |     | NULL    |                |
+| Name              | varchar(100)                                        | NO   | MUL | NULL    |                |
+| Body              | text                                                | NO   |     | NULL    |                |
+| Format            | varchar(20)                                         | YES  |     | NULL    |                |
+| Tags              | varchar(255)                                        | YES  |     | NULL    |                |
+| CountComments     | int(11)                                             | NO   |     | 1       |                |
+| CountBookmarks    | int(11)                                             | YES  |     | NULL    |                |
+| CountViews        | int(11)                                             | NO   |     | 1       |                |
+| Closed            | tinyint(4)                                          | NO   |     | 0       |                |
+| Announce          | tinyint(4)                                          | NO   |     | 0       |                |
+| Sink              | tinyint(4)                                          | NO   |     | 0       |                |
+| DateInserted      | datetime                                            | YES  |     | NULL    |                |
+| DateUpdated       | datetime                                            | NO   |     | NULL    |                |
+| InsertIPAddress   | varchar(15)                                         | YES  |     | NULL    |                |
+| UpdateIPAddress   | varchar(15)                                         | YES  |     | NULL    |                |
+| DateLastComment   | datetime                                            | YES  | MUL | NULL    |                |
+| LastCommentUserID | int(11)                                             | YES  |     | NULL    |                |
+| Score             | float                                               | YES  |     | NULL    |                |
+| Attributes        | text                                                | YES  |     | NULL    |                |
+| RegardingID       | int(11)                                             | YES  | MUL | NULL    |                |
+| LastIP            | varchar(14)                                         | YES  |     | NULL    |                |
+| QnA               | enum('Unanswered','Answered','Accepted','Rejected') | YES  |     | NULL    |                |
+| DateAccepted      | datetime                                            | YES  |     | NULL    |                |
+| DateOfAnswer      | datetime                                            | YES  |     | NULL    |                |
++-------------------+-----------------------------------------------------+------+-----+---------+----------------+
+
+
+(root@localhost) [vanilla]> desc GDN_Comment;
++-----------------+-----------------------------+------+-----+---------+----------------+
+| Field           | Type                        | Null | Key | Default | Extra          |
++-----------------+-----------------------------+------+-----+---------+----------------+
+| CommentID       | int(11)                     | NO   | PRI | NULL    | auto_increment |
+| DiscussionID    | int(11)                     | NO   | MUL | NULL    |                |
+| InsertUserID    | int(11)                     | YES  | MUL | NULL    |                |
+| UpdateUserID    | int(11)                     | YES  |     | NULL    |                |
+| DeleteUserID    | int(11)                     | YES  |     | NULL    |                |
+| Body            | text                        | NO   | MUL | NULL    |                |
+| Format          | varchar(20)                 | YES  |     | NULL    |                |
+| DateInserted    | datetime                    | YES  | MUL | NULL    |                |
+| DateDeleted     | datetime                    | YES  |     | NULL    |                |
+| DateUpdated     | datetime                    | YES  |     | NULL    |                |
+| InsertIPAddress | varchar(15)                 | YES  |     | NULL    |                |
+| UpdateIPAddress | varchar(15)                 | YES  |     | NULL    |                |
+| Flag            | tinyint(4)                  | NO   |     | 0       |                |
+| Score           | float                       | YES  |     | NULL    |                |
+| Attributes      | text                        | YES  |     | NULL    |                |
+| LastIP          | varchar(14)                 | YES  |     | NULL    |                |
+| QnA             | enum('Accepted','Rejected') | YES  |     | NULL    |                |
+| DateAccepted    | datetime                    | YES  |     | NULL    |                |
+| AcceptedUserID  | int(11)                     | YES  |     | NULL    |                |
++-----------------+-----------------------------+------+-----+---------+----------------+
+
+(root@localhost) [vanilla]> desc GDN_UserDiscussion;
++----------------+------------+------+-----+---------+-------+
+| Field          | Type       | Null | Key | Default | Extra |
++----------------+------------+------+-----+---------+-------+
+| UserID         | int(11)    | NO   | PRI | NULL    |       |
+| DiscussionID   | int(11)    | NO   | PRI | NULL    |       |
+| Score          | float      | YES  |     | NULL    |       |
+| CountComments  | int(11)    | NO   |     | 0       |       |
+| DateLastViewed | datetime   | YES  |     | NULL    |       |
+| Dismissed      | tinyint(4) | NO   |     | 0       |       |
+| Bookmarked     | tinyint(4) | NO   |     | 0       |       |
++----------------+------------+------+-----+---------+-------+
+
+(root@localhost) [vanilla]> desc GDN_TagDiscussion;
++--------------+---------+------+-----+---------+-------+
+| Field        | Type    | Null | Key | Default | Extra |
++--------------+---------+------+-----+---------+-------+
+| TagID        | int(11) | NO   | PRI | NULL    |       |
+| DiscussionID | int(11) | NO   | PRI | NULL    |       |
++--------------+---------+------+-----+---------+-------+
+
+(root@localhost) [vanilla]> desc GDN_Tag;
++------------------+--------------+------+-----+---------+----------------+
+| Field            | Type         | Null | Key | Default | Extra          |
++------------------+--------------+------+-----+---------+----------------+
+| TagID            | int(11)      | NO   | PRI | NULL    | auto_increment |
+| Name             | varchar(255) | NO   | UNI | NULL    |                |
+| Type             | varchar(10)  | YES  | MUL | NULL    |                |
+| InsertUserID     | int(11)      | YES  | MUL | NULL    |                |
+| DateInserted     | datetime     | NO   |     | NULL    |                |
+| CountDiscussions | int(11)      | NO   |     | 0       |                |
++------------------+--------------+------+-----+---------+----------------+
+
+(root@localhost) [vanilla]> desc GDN_Media;
++---------------+----------------------+------+-----+---------+----------------+
+| Field         | Type                 | Null | Key | Default | Extra          |
++---------------+----------------------+------+-----+---------+----------------+
+| MediaID       | int(11)              | NO   | PRI | NULL    | auto_increment |
+| Name          | varchar(255)         | NO   |     | NULL    |                |
+| Type          | varchar(128)         | NO   |     | NULL    |                |
+| Size          | int(11)              | NO   |     | NULL    |                |
+| ImageWidth    | smallint(5) unsigned | YES  |     | NULL    |                |
+| ImageHeight   | smallint(5) unsigned | YES  |     | NULL    |                |
+| StorageMethod | varchar(24)          | NO   |     | NULL    |                |
+| Path          | varchar(255)         | NO   |     | NULL    |                |
+| InsertUserID  | int(11)              | NO   |     | NULL    |                |
+| DateInserted  | datetime             | NO   |     | NULL    |                |
+| ForeignID     | int(11)              | YES  |     | NULL    |                |
+| ForeignTable  | varchar(24)          | YES  |     | NULL    |                |
++---------------+----------------------+------+-----+---------+----------------+
+
+(root@localhost) [vanilla]> desc GDN_Category;
++----------------------+--------------+------+-----+---------+----------------+
+| Field                | Type         | Null | Key | Default | Extra          |
++----------------------+--------------+------+-----+---------+----------------+
+| CategoryID           | int(11)      | NO   | PRI | NULL    | auto_increment |
+| ParentCategoryID     | int(11)      | YES  |     | NULL    |                |
+| TreeLeft             | int(11)      | YES  |     | NULL    |                |
+| TreeRight            | int(11)      | YES  |     | NULL    |                |
+| Depth                | int(11)      | YES  |     | NULL    |                |
+| CountDiscussions     | int(11)      | NO   |     | 0       |                |
+| CountComments        | int(11)      | NO   |     | 0       |                |
+| DateMarkedRead       | datetime     | YES  |     | NULL    |                |
+| AllowDiscussions     | tinyint(4)   | NO   |     | 1       |                |
+| Archived             | tinyint(4)   | NO   |     | 0       |                |
+| Name                 | varchar(255) | NO   |     | NULL    |                |
+| UrlCode              | varchar(255) | YES  |     | NULL    |                |
+| Description          | varchar(500) | YES  |     | NULL    |                |
+| Sort                 | int(11)      | YES  |     | NULL    |                |
+| PermissionCategoryID | int(11)      | NO   |     | -1      |                |
+| InsertUserID         | int(11)      | NO   | MUL | NULL    |                |
+| UpdateUserID         | int(11)      | YES  |     | NULL    |                |
+| DateInserted         | datetime     | NO   |     | NULL    |                |
+| DateUpdated          | datetime     | NO   |     | NULL    |                |
+| LastCommentID        | int(11)      | YES  |     | NULL    |                |
+| LastDiscussionID     | int(11)      | YES  |     | NULL    |                |
++----------------------+--------------+------+-----+---------+----------------+
+(root@localhost) [vanilla]> desc GDN_ActivityType;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| ActivityTypeID  | int(11)      | NO   | PRI | NULL    | auto_increment |
+| Name            | varchar(20)  | NO   |     | NULL    |                |
+| AllowComments   | tinyint(4)   | NO   |     | 0       |                |
+| ShowIcon        | tinyint(4)   | NO   |     | 0       |                |
+| ProfileHeadline | varchar(255) | NO   |     | NULL    |                |
+| FullHeadline    | varchar(255) | NO   |     | NULL    |                |
+| RouteCode       | varchar(255) | YES  |     | NULL    |                |
+| Notify          | tinyint(4)   | NO   |     | 0       |                |
+| Public          | tinyint(4)   | NO   |     | 1       |                |
++-----------------+--------------+------+-----+---------+----------------+
+
+(root@localhost) [vanilla]> select ActivityTypeID, Name from GDN_ActivityType;
++----------------+---------------------+
+| ActivityTypeID | Name                |
++----------------+---------------------+
+|              1 | SignIn              |
+|              2 | Join                |
+|              3 | JoinInvite          |
+|              4 | JoinApproved        |
+|              5 | JoinCreated         |
+|              6 | AboutUpdate         |
+|              7 | WallComment         |
+|              8 | PictureChange       |
+|              9 | RoleChange          |
+|             10 | ActivityComment     |
+|             11 | Import              |
+|             12 | Banned              |
+|             13 | Unbanned            |
+|             14 | WallPost            |
+|             15 | ConversationMessage |
+|             16 | AddedToConversation |
+|             17 | NewDiscussion       |
+|             18 | NewComment          |
+|             19 | DiscussionComment   |
+|             20 | DiscussionMention   |
+|             21 | CommentMention      |
+|             22 | BookmarkComment     |
+|             23 | QuestionAnswer      |
+|             24 | AnswerAccepted      |
++----------------+---------------------+
+
+
+(root@localhost) [vanilla]> desc GDN_Activity;
++-------------------+--------------+------+-----+---------+----------------+
+| Field             | Type         | Null | Key | Default | Extra          |
++-------------------+--------------+------+-----+---------+----------------+
+| ActivityID        | int(11)      | NO   | PRI | NULL    | auto_increment |
+| CommentActivityID | int(11)      | YES  | MUL | NULL    |                |
+| ActivityTypeID    | int(11)      | NO   |     | NULL    |                |
+| ActivityUserID    | int(11)      | YES  | MUL | NULL    |                |
+| RegardingUserID   | int(11)      | YES  | MUL | NULL    |                |
+| Story             | text         | YES  |     | NULL    |                |
+| Route             | varchar(255) | YES  |     | NULL    |                |
+| CountComments     | int(11)      | NO   |     | 0       |                |
+| InsertUserID      | int(11)      | YES  | MUL | NULL    |                |
+| DateInserted      | datetime     | NO   |     | NULL    |                |
+| InsertIPAddress   | varchar(15)  | YES  |     | NULL    |                |
+| Emailed           | tinyint(4)   | NO   |     | 0       |                |
++-------------------+--------------+------+-----+---------+----------------+
